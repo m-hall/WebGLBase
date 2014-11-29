@@ -1,0 +1,33 @@
+{
+	"SublimeLinter":
+	{
+		"linters":
+		{
+			"jslint":
+			{
+				"args":
+				[
+					"--browser",
+					"--vars",
+					"--plusplus",
+					"--devel",
+					"--predef=Event",
+					"--predef=Mouse",
+					"--predef=Keyboard",
+					"--predef=Joystick",
+					"--predef=Touch",
+					"--predef=GL",
+					"--predef=Util",
+					"--predef=Loop"
+				]
+			}
+		}
+	},
+	"folders":
+	[
+		{
+			"follow_symlinks": true,
+			"path": "."
+		}
+	]
+}
