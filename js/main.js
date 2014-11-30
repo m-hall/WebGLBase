@@ -13,6 +13,8 @@
         Keyboard.init();
         Touch.init();
         GL.init();
+
+        Event.listen('resize', Loop.requestFrame.bind(Loop));
     }
 
     /**
