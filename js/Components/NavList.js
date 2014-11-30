@@ -105,21 +105,20 @@ var NavList = (function () {
      * @param  {object} change  A list of changed touch objects
      */
     function touchEvent(change) {
-        console.log(change, this.items);
         var items = this.items,
             i,
             l,
             item,
-            someFN = function (key) {
-                if (pointInBounds(change[key], item.bounds)) {
+            keys = change.keys,
+            j,
+            k = keys.length;
+        for (i = 0, l = items.length; i < l; i++) {
+            item = items[i];
+            for (j = 0; j < k; j++) {
+                if (pointInBounds(change[keys[j]], item.bounds)) {
                     this.onAction(item);
                     return true;
                 }
-            }.bind(this);
-        for (i = 0, l = items.length; i < l; i++) {
-            item = items[i];
-            if (Object.keys(change).some(someFN)) {
-                return;
             }
         }
     }
