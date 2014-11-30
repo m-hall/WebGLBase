@@ -1,10 +1,22 @@
-(function () {
+
+/**
+ * Generic Utility functions that haven't been sorted into specific utility classes
+ * @return {object}  Public Util API
+ */
+var Util = (function () {
     "use strict";
-    window.Util = {
+    return {
         UP: 0,
         RIGHT: Math.PI * 0.5,
         DOWN: Math.PI,
         LEFT: Math.PI * 1.5,
+
+        /**
+         * An empty function that does nothing
+         */
+        empty: function () {
+            return;
+        },
 
         /**
          * Verifies that an angle is close to another angle
