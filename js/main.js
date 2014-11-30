@@ -11,6 +11,7 @@
     function initialize() {
         Mouse.init();
         Keyboard.init();
+        Touch.init();
         GL.init();
     }
 
