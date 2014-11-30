@@ -10,6 +10,7 @@ var Loop = (function () {
         time: new Date().getTime(),
         delta: 0,
         frameRequested: false,
+        keepRendering: false,
 
         /**
          * Requests a render frame
@@ -34,6 +35,9 @@ var Loop = (function () {
 
             View.get().render(delta);
             Loop.delta = 0;
+            if (Loop.keepRendering) {
+                Loop.requestFrame();
+            }
         }
     };
 }());
