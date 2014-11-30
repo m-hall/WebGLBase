@@ -100,6 +100,29 @@ var NavList = (function () {
             this.selector.animate(newItem.bounds);
         }
     }
+    /**
+     * Handles touch events
+     * @param  {object} change  A list of changed touch objects
+     */
+    function touchEvent(change) {
+        console.log(change, this.items);
+        var items = this.items,
+            i,
+            l,
+            item,
+            someFN = function (key) {
+                if (pointInBounds(change[key], item.bounds)) {
+                    this.onAction(item);
+                    return true;
+                }
+            }.bind(this);
+        for (i = 0, l = items.length; i < l; i++) {
+            item = items[i];
+            if (Object.keys(change).some(someFN)) {
+                return;
+            }
+        }
+    }
 
     /**
      * NavList component constructor
@@ -110,6 +133,7 @@ var NavList = (function () {
         this.onAction = onAction;
         this.mouseListener = mouseButton.bind(this);
         this.keyListener = keyEvent.bind(this);
+        this.touchListener = touchEvent.bind(this);
         this.selector = new Selector();
     }
     exports.prototype = {
@@ -174,6 +198,7 @@ var NavList = (function () {
         enable: function () {
             Event.listen('mouseButton', this.mouseListener);
             Event.listen('keyEvent', this.keyListener);
+            Event.listen('touch', this.touchListener);
             return;
         },
         /**
@@ -182,6 +207,7 @@ var NavList = (function () {
         disable: function () {
             Event.unlisten('mouseButton', this.mouseListener);
             Event.unlisten('keyEvent', this.keyListener);
+            Event.unlisten('touch', this.touchListener);
             return;
         }
     };
