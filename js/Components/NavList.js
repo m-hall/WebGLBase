@@ -109,7 +109,7 @@ var NavList = (function () {
             i,
             l,
             item,
-            keys = change.keys,
+            keys = Object.keys(change),
             j,
             k = keys.length;
         for (i = 0, l = items.length; i < l; i++) {
