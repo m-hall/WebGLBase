@@ -6,8 +6,8 @@ var Mouse = (function () {
     "use strict";
 
     var exports = {
-        x: 0,
-        y: 0,
+        x: null,
+        y: null,
         left: false,
         middle: false,
         right: false
@@ -63,8 +63,8 @@ var Mouse = (function () {
      */
     function handleMove(e) {
         var change = {};
-        change.x = e.pageX - exports.x;
-        change.y = window.innerHeight - e.pageY - exports.y;
+        change.x = e.pageX - (exports.x || 0);
+        change.y = window.innerHeight - e.pageY - (exports.y || 0);
         exports.x = e.pageX;
         exports.y = window.innerHeight - e.pageY;
         Event.fire('mouseMove', change);
