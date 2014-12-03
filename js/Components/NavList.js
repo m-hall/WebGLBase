@@ -80,17 +80,16 @@ var NavList = (function () {
      * @param  {object} change Lists all changes in key states
      */
     function keyEvent(change) {
-        var keys = Keyboard.keys,
-            newItem = null;
-        if (change[keys.up] === true) {
+        var newItem = null;
+        if (change.up === true) {
             newItem = nearestInDirection(this.selected, this.items, Util.UP);
-        } else if (change[keys.down] === true) {
+        } else if (change.down === true) {
             newItem = nearestInDirection(this.selected, this.items, Util.DOWN);
-        } else if (change[keys.left] === true) {
+        } else if (change.left === true) {
             newItem = nearestInDirection(this.selected, this.items, Util.LEFT);
-        } else if (change[keys.right] === true) {
+        } else if (change.right === true) {
             newItem = nearestInDirection(this.selected, this.items, Util.RIGHT);
-        } else if (change[keys.enter] === true) {
+        } else if (change.enter === true) {
             this.onAction(this.selected);
             return;
         }

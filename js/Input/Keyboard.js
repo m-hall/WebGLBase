@@ -4,7 +4,9 @@
  */
 var Keyboard = (function () {
     "use strict";
+    var exports = {};
     var keyCodes = [];
+    var keywords = {};
     var keys = {
         'backspace': 8,
         'tab': 9,
@@ -14,6 +16,8 @@ var Keyboard = (function () {
         'alt': 18,
         'capsLock': 20,
         'escape': 27,
+        ' ': 32,
+        'space': 32,
         'pageUp': 33,
         'pageDown': 34,
         'end': 35,
@@ -109,7 +113,7 @@ var Keyboard = (function () {
         'slash': 191,
         '\/': 191,
         'graveAccent': 192,
-        '\`': 192,
+        '`': 192,
         'openBracket': 219,
         '[': 219,
         'backslash': 220,
@@ -121,14 +125,48 @@ var Keyboard = (function () {
     };
 
     /**
+     * Adds keywords to an object representing the current keyCode
+     * @param  {Object} obj      An object
+     * @param  {int}    keycode  A keyboard key code
+     * @param  {bool}   keyState The state of the key
+     * @return {Object}          The original object with new state
+     */
+    function stateKeywords(obj, keycode, keyState) {
+        var words = keywords[keycode],
+            i,
+            l;
+        for (i = 0, l = words.length; i < l; i++) {
+            obj[words[i]] = keyState;
+        }
+        return obj;
+    }
+
+    /**
+     * Updates the current state of the Keyboard
+     */
+    function updateState() {
+        var state = {};
+        var i, l;
+        for (i = 0, l = keyCodes.length; i < l; i++) {
+            state[keyCodes[i]] = true;
+            stateKeywords(state, keyCodes[i], true);
+        }
+        exports.state = state;
+    }
+
+    /**
      * Updates the key states when a key is pressed
      * @param  {DOMEvent} e  A DOM key event
      * @return {false}       False to prevent default browser action
      */
     function handleDown(e) {
         var change = {};
-        keyCodes.push(e.keyCode);
+        if (Util.indexOf(keyCodes, e.keyCode) === -1) {
+            keyCodes.push(e.keyCode);
+        }
         change[e.keyCode] = true;
+        stateKeywords(change, e.keyCode, true);
+        updateState();
         Event.fire('keyEvent', change);
         return Util.preventAction(e);
     }
@@ -142,6 +180,8 @@ var Keyboard = (function () {
         var i = keyCodes.indexOf(e.keyCode);
         keyCodes.splice(i, 1);
         change[e.keyCode] = false;
+        stateKeywords(change, e.keyCode, false);
+        updateState();
         Event.fire('keyEvent', change);
         return Util.preventAction(e);
     }
@@ -149,12 +189,21 @@ var Keyboard = (function () {
      * Initializes the listeners for key events
      */
     function init() {
+        var words = Object.keys(keys),
+            i,
+            l;
+        for (i = 0, l = words.length; i < l; i++) {
+            if (!keywords[keys[words[i]]]) {
+                keywords[keys[words[i]]] = [];
+            }
+            keywords[keys[words[i]]].push(words[i]);
+        }
         window.addEventListener("keydown", handleDown, false);
         window.addEventListener("keyup", handleUp, false);
     }
-    return {
-        init: init,
-        keys: keys,
-        keyCodes: keyCodes
-    };
+
+    exports.init = init;
+    exports.keys = keys;
+    exports.keyCodes = keyCodes;
+    return exports;
 }());

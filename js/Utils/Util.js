@@ -19,6 +19,22 @@ var Util = (function () {
         },
 
         /**
+         * Gets the index of an item in an array. Works like array.indexOf, but faster.
+         * @param  {Array} arr   An array
+         * @param  {Mixes} item  Anything
+         * @return {int}         The numeric index of the item if it exists, -1 otherwise
+         */
+        indexOf: function (arr, item) {
+            var i = arr.length;
+            while (i--) {
+                if (arr[i] === item) {
+                    return i;
+                }
+            }
+            return -1;
+        },
+
+        /**
          * Verifies that an angle is close to another angle
          * @param  {float}  from  An angle in radians
          * @param  {float}  to    An angle in radians
