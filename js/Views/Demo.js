@@ -149,8 +149,8 @@ var Demo = (function () {
         Loop.requestFrame();
     }
     /**
-     * Handles keyboard events
-     * @param  {Object} data Keyboard key change data
+     * Handles touch events
+     * @param  {Object} data Touch change data
      */
     function touchHandler(data) {
         if (!running) {
