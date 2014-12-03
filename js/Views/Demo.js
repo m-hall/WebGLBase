@@ -148,6 +148,27 @@ var Demo = (function () {
         }
         Loop.requestFrame();
     }
+    /**
+     * Handles keyboard events
+     * @param  {Object} data Keyboard key change data
+     */
+    function touchHandler(data) {
+        if (!running) {
+            return;
+        }
+        var keys = Object.keys(data),
+            touch,
+            i,
+            l;
+        for (i = 0, l = keys.length; i < l; i++) {
+            touch = data[keys[i]];
+            if (touch.ended) {
+                addRect();
+                current.x = touch.x;
+                current.y = touch.y;
+            }
+        }
+    }
 
     /**
      * Opens the view
@@ -157,6 +178,7 @@ var Demo = (function () {
         Event.listen('mouseButton', mouseButton);
         Event.listen('mouseMove', mouseMove);
         Event.listen('keyEvent', keyEvent);
+        Event.listen('touch', touchHandler);
         Loop.requestFrame();
     }
 
@@ -169,6 +191,7 @@ var Demo = (function () {
         Event.unlisten('mouseButton', mouseButton);
         Event.unlisten('mouseMove', mouseMove);
         Event.unlisten('keyEvent', keyEvent);
+        Event.unlisten('touch', touchHandler);
 
         //Release GL buffers and textures
         for (i = 0, l = rects.length; i < l; i++) {
