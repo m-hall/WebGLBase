@@ -7,11 +7,67 @@
 var Demo = (function () {
     "use strict";
 
-    var textures = [],
-        current,
+    var current,
         totalDelta,
-        initialized = false;
+        initialized = false,
+        rects = [],
+        moveSpeed = 0.3;
 
+    /**
+     * Gets a new "rect"
+     * @param  {int} [x]  Optional. Start X position.
+     * @param  {int} [y]  Optional. Start Y position.
+     * @return {Object}   An object that defines a rect.
+     */
+    function getRect(x, y) {
+        var round = Math.round,
+            random = Math.random,
+            r = round(random() * 155) + 100,
+            g = round(random() * 155) + 100,
+            b = round(random() * 155) + 100,
+            a = round(random() * 100) + 100;
+        return {
+            texture: GL.createFlatTexture([r, g, b, a]),
+            width: 100 * random() + 10,
+            height: 100 * random() + 10,
+            x: x || round(window.innerWidth / 2),
+            y: y || round(window.innerHeight / 2),
+            z: 0,
+            startDelta: totalDelta,
+            deltaMultiplier: random() * 0.005 + 0.002
+        };
+    }
+
+    /**
+     * Adds a rect at the current location
+     */
+    function addRect() {
+        current = getRect(current.x, current.y);
+        rects.push(current);
+    }
+    /**
+     * Handles keyboard move controls
+     * @param  {int} delta  Milliseconds since last frame
+     */
+    function moveKeys(delta) {
+        var keyState = Keyboard.state,
+            distance = moveSpeed * delta;
+        if (!keyState) {
+            return;
+        }
+        if (keyState.up || keyState.w) {
+            current.y += distance;
+        }
+        if (keyState.left || keyState.a) {
+            current.x -= distance;
+        }
+        if (keyState.down || keyState.s) {
+            current.y -= distance;
+        }
+        if (keyState.right || keyState.d) {
+            current.x += distance;
+        }
+    }
     /**
      * Initializes the view
      */
@@ -19,12 +75,9 @@ var Demo = (function () {
         if (initialized) {
             return;
         }
-        textures.push(GL.createFlatTexture([255, 0, 0, 100]));
-        textures.push(GL.createFlatTexture([0, 255, 0, 100]));
-        textures.push(GL.createFlatTexture([0, 0, 255, 100]));
-        textures.push(GL.createFlatTexture([255, 255, 255, 100]));
-        current = 0;
         totalDelta = 0;
+        current = getRect();
+        rects.push(current);
         initialized = true;
     }
 
@@ -34,68 +87,50 @@ var Demo = (function () {
      */
     function render(delta) {
         Loop.requestFrame();
+        moveKeys(delta);
         totalDelta += delta;
-        GL.renderQuad(
-            textures[current],
-            {
-                x: Mouse.x,
-                y: Mouse.y,
-                z: 0,
-                width: 30,
-                height: 60
-            },
-            {
-                rotation: [0, 0, totalDelta * 0.002]
-            }
-        );
-        GL.renderQuad(
-            textures[(current + 1) % textures.length],
-            {
-                x: Mouse.x,
-                y: window.innerHeight - Mouse.y,
-                z: 0,
-                width: 40,
-                height: 40
-            },
-            {
-                rotation: [0, 0, totalDelta * 0.003]
-            }
-        );
-        GL.renderQuad(
-            textures[(current + 2) % textures.length],
-            {
-                x: window.innerWidth - Mouse.x,
-                y: Mouse.y,
-                z: 0,
-                width: 100,
-                height: 10
-            },
-            {
-                rotation: [0, 0, totalDelta * 0.001]
-            }
-        );
-        GL.renderQuad(
-            textures[(current + 3) % textures.length],
-            {
-                x: window.innerWidth - Mouse.x,
-                y: window.innerHeight - Mouse.y,
-                z: 0,
-                width: 80,
-                height: 40
-            },
-            {
-                rotation: [0, 0, totalDelta * 0.005]
-            }
-        );
+        var i, l, rect;
+        for (i = 0, l = rects.length; i < l; i++) {
+            rect = rects[i];
+            GL.renderQuad(
+                rect.texture,
+                rect,
+                {
+                    rotation: [0, 0, (totalDelta - rect.startDelta) * rect.deltaMultiplier]
+                }
+            );
+        }
     }
 
     /**
      * Responds to mouse button changes
-     * @param  {object} data  Mouse data
+     * @param  {Object} data  Mouse button changes
      */
     function mouseButton(data) {
         if (data.left === true) {
-            current = (current + 1) % textures.length;
+            addRect();
+            return;
+        }
+    }
+
+    /**
+     * Responds to mouse movement
+     * @param  {Object} data  Mouse x, y changes
+     */
+    function mouseMove(data) {
+        current.x = Mouse.x;
+        current.y = Mouse.y;
+    }
+
+    /**
+     * Handles keyboard events
+     * @param  {Object} data Keyboard key change data
+     */
+    function keyEvent(data) {
+        if (data.space || data.enter) {
+            addRect();
+        } else if (data.escape) {
+            View.set('Menu');
         }
     }
 
@@ -105,6 +140,8 @@ var Demo = (function () {
     function open() {
         init();
         Event.listen('mouseButton', mouseButton);
+        Event.listen('mouseMove', mouseMove);
+        Event.listen('keyEvent', keyEvent);
         Loop.requestFrame();
     }
 
@@ -115,12 +152,14 @@ var Demo = (function () {
         var i, l;
         //Unlisten from events
         Event.unlisten('mouseButton', mouseButton);
+        Event.unlisten('mouseMove', mouseMove);
+        Event.unlisten('keyEvent', keyEvent);
 
         //Release GL buffers and textures
-        for (i = 0, l = textures.length; i < l; i++) {
-            GL.deleteTexture(textures[i]);
+        for (i = 0, l = rects.length; i < l; i++) {
+            GL.deleteTexture(rects[i].texture);
         }
-        textures = [];
+        rects = [];
 
         //Uninitialize
         initialized = false;
