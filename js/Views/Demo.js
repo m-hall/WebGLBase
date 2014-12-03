@@ -11,7 +11,8 @@ var Demo = (function () {
         totalDelta,
         initialized = false,
         rects = [],
-        moveSpeed = 0.3;
+        moveSpeed = 0.3,
+        running = true;
 
     /**
      * Gets a new "rect"
@@ -86,7 +87,9 @@ var Demo = (function () {
      * @param  {int} delta  Time since last frame
      */
     function render(delta) {
-        Loop.requestFrame();
+        if (running) {
+            Loop.requestFrame();
+        }
         moveKeys(delta);
         totalDelta += delta;
         var i, l, rect;
@@ -107,10 +110,13 @@ var Demo = (function () {
      * @param  {Object} data  Mouse button changes
      */
     function mouseButton(data) {
-        if (data.left === true) {
-            addRect();
+        if (!running) {
             return;
         }
+        if (data.left === true) {
+            addRect();
+        }
+        Loop.requestFrame();
     }
 
     /**
@@ -118,6 +124,9 @@ var Demo = (function () {
      * @param  {Object} data  Mouse x, y changes
      */
     function mouseMove(data) {
+        if (!running) {
+            return;
+        }
         current.x = Mouse.x;
         current.y = Mouse.y;
     }
@@ -127,11 +136,17 @@ var Demo = (function () {
      * @param  {Object} data Keyboard key change data
      */
     function keyEvent(data) {
+        if (!running && !data.p) {
+            return;
+        }
         if (data.space || data.enter) {
             addRect();
         } else if (data.escape) {
             View.set('Menu');
+        } else if (data.p) {
+            running = !running;
         }
+        Loop.requestFrame();
     }
 
     /**
