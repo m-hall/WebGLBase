@@ -10,6 +10,7 @@
 					"--browser",
 					"--vars",
 					"--plusplus",
+					"--unparam",
 					"--devel",
 					"--predef=Event",
 					"--predef=Mouse",
