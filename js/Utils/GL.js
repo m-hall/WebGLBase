@@ -58,10 +58,11 @@ var GL = (function () {
             "precision lowp float;",
             "#endif",
             "uniform sampler2D tex;",
+            "uniform float alpha;",
             "varying vec2 texCoord;",
             "void main(void) {",
             "    vec4 o = texture2D(tex, texCoord);",
-            "    gl_FragColor = o;",
+            "    gl_FragColor = vec4(o.rgb, o.a * alpha);",
             "}"
         ].join('\n');
 
@@ -97,6 +98,8 @@ var GL = (function () {
         shader.textureCoord = gl.getAttribLocation(shader, 'textureCoord');
         gl.enableVertexAttribArray(shader.textureCoord);
         shader.tex = gl.getUniformLocation(shader, 'tex');
+
+        shader.alpha = gl.getUniformLocation(shader, 'alpha');
 
         // modelView matrix
         shader.modelView = gl.getUniformLocation(shader, 'modelView');
@@ -234,10 +237,12 @@ var GL = (function () {
         var modelView = mat4.create(); // identity
         mat4.translate(modelView, modelView, [bounds.x, bounds.y, bounds.z || 0]);
         mat4.rotate(modelView, modelView, rDelta, rotation);
-        gl.uniformMatrix4fv(shader.modelView, false, modelView);
 
         var triangleBuffer = bufferData(3, quadCoords(bounds.width, bounds.height));
         var texBuffer = quad.texBuffer;
+
+        gl.uniform1f(shader.alpha, isNaN(options.alpha) ? 1 : options.alpha);
+        gl.uniformMatrix4fv(shader.modelView, false, modelView);
 
         gl.activeTexture(gl.TEXTURE0);
         gl.bindTexture(gl.TEXTURE_2D, texture);
