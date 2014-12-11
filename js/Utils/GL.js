@@ -40,6 +40,7 @@ var GL = (function () {
     };
 
     var perspectiveMatrix;
+    var modelView;
 
     var shader = null,
         vertexShader = [
@@ -104,6 +105,7 @@ var GL = (function () {
 
         // modelView matrix
         shader.modelView = gl.getUniformLocation(shader, 'modelView');
+        modelView = mat4.create();
 
         // perspective matrix
         shader.perspective = gl.getUniformLocation(shader, 'perspective');
@@ -219,7 +221,7 @@ var GL = (function () {
         var triangleBuffer = quad.centerBuffer;
         var texBuffer = quad.texBuffer;
 
-        var modelView = mat4.create(); // identity
+        mat4.identity(modelView);
         mat4.translate(modelView, modelView, [bounds.x, bounds.y, bounds.z || 0]);
         mat4.rotate(modelView, modelView, rDelta, rotation);
         mat4.scale(modelView, modelView, [bounds.width, bounds.height, 0]);
