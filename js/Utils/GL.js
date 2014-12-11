@@ -18,13 +18,13 @@ var GL = (function () {
 
     var quad = {
         center: [
-            -1.0, -1.0, 0.0,
-            -1.0, 1.0, 0.0,
-            1.0, -1.0, 0.0,
+            -0.5, -0.5, 0.0,
+            -0.5, 0.5, 0.0,
+            0.5, -0.5, 0.0,
 
-            -1.0, 1.0, 0.0,
-            1.0, -1.0, 0.0,
-            1.0, 1.0, 0.0
+            -0.5, 0.5, 0.0,
+            0.5, -0.5, 0.0,
+            0.5, 0.5, 0.0
         ],
         tex: [
             0.0, 1.0,
@@ -35,6 +35,7 @@ var GL = (function () {
             1.0, 1.0,
             1.0, 0.0
         ],
+        centerBuffer: null,
         texBuffer: null,
     };
 
@@ -134,25 +135,6 @@ var GL = (function () {
     }
 
     /**
-     * Gets coordinates for a Quad with given width and height
-     * @param  {int}     width  Pixel width
-     * @param  {int}     height Pixel height
-     * @return {Array}          A set of vertices
-     */
-    function quadCoords(width, height) {
-        var q = quad.center.slice(0),
-            w = width * 0.5,
-            h = height * 0.5,
-            i,
-            l;
-        for (i = 0, l = q.length; i < l; i += 3) {
-            q[i] *= w;
-            q[i + 1] *= h;
-        }
-        return q;
-    }
-
-    /**
      * Creates a GL buffer from an array based on item size
      * @param  {int}       itemSize The number of properties per attribute
      * @param  {Array}     data     A set of data scalars to be buffered
@@ -234,12 +216,13 @@ var GL = (function () {
         var rotation = options.rotation || [0, 0, 0];
         var rDelta = Math.max(rotation[0], rotation[1], rotation[2]);
 
+        var triangleBuffer = quad.centerBuffer;
+        var texBuffer = quad.texBuffer;
+
         var modelView = mat4.create(); // identity
         mat4.translate(modelView, modelView, [bounds.x, bounds.y, bounds.z || 0]);
         mat4.rotate(modelView, modelView, rDelta, rotation);
-
-        var triangleBuffer = bufferData(3, quadCoords(bounds.width, bounds.height));
-        var texBuffer = quad.texBuffer;
+        mat4.scale(modelView, modelView, [bounds.width, bounds.height, 0]);
 
         gl.uniform1f(shader.alpha, isNaN(options.alpha) ? 1 : options.alpha);
         gl.uniformMatrix4fv(shader.modelView, false, modelView);
@@ -256,6 +239,14 @@ var GL = (function () {
     }
 
     /**
+     * Initializes the quad buffers
+     */
+    function initQuad() {
+        quad.texBuffer = bufferData(2, quad.tex);
+        quad.centerBuffer = bufferData(3, quad.center);
+    }
+
+    /**
      * Initializes the GL viewport and renderer
      */
     function init() {
@@ -268,7 +259,7 @@ var GL = (function () {
         update();
         createProgram();
         blankTexture = getBlankTexture();
-        quad.texBuffer = bufferData(2, quad.tex);
+        initQuad();
 
         document.body.appendChild(canvas);
         window.addEventListener('resize', update, false);
