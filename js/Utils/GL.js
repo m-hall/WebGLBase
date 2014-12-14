@@ -21,16 +21,10 @@ var GL = (function () {
             -0.5, -0.5, 0.0,
             -0.5, 0.5, 0.0,
             0.5, -0.5, 0.0,
-
-            -0.5, 0.5, 0.0,
-            0.5, -0.5, 0.0,
             0.5, 0.5, 0.0
         ],
         tex: [
             0.0, 1.0,
-            0.0, 0.0,
-            1.0, 1.0,
-
             0.0, 0.0,
             1.0, 1.0,
             1.0, 0.0
@@ -237,7 +231,7 @@ var GL = (function () {
         gl.vertexAttribPointer(shader.vertex, triangleBuffer.itemSize, gl.FLOAT, false, 0, 0);
         gl.bindBuffer(gl.ARRAY_BUFFER, texBuffer);
         gl.vertexAttribPointer(shader.textureCoord, texBuffer.itemSize, gl.FLOAT, false, 0, 0);
-        gl.drawArrays(gl.TRIANGLES, 0, triangleBuffer.numItems);
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, triangleBuffer.numItems);
     }
 
     /**
