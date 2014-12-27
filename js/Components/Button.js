@@ -6,7 +6,7 @@ var Button = (function () {
      * Button component constructor
      * @param  {object} bounds Bounds object with x, y, z, width, height
      */
-    function exports(bounds) {
+    function ButtonClass(bounds) {
         var canvas = document.createElement('canvas'),
             ratio = GL.getRatio();
         canvas.width = bounds.width * ratio;
@@ -15,7 +15,7 @@ var Button = (function () {
         this.canvas = canvas;
         this.context = canvas.getContext('2d');
     }
-    exports.prototype = {
+    ButtonClass.prototype = {
         /**
          * Renders the button
          */
@@ -36,5 +36,5 @@ var Button = (function () {
             this.canvas = null;
         }
     };
-    return exports;
+    return ButtonClass;
 }());
