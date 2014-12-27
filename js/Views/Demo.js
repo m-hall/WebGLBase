@@ -12,7 +12,10 @@ var Demo = (function () {
         initialized = false,
         rects = [],
         moveSpeed = 0.3,
-        running = true;
+        running = true,
+        quadOptions = {
+            rotation: [0, 0, 0]
+        };
 
     /**
      * Gets a new "rect"
@@ -92,15 +95,16 @@ var Demo = (function () {
         }
         moveKeys(delta);
         totalDelta += delta;
-        var i, l, rect;
+        var i,
+            l,
+            rect;
         for (i = 0, l = rects.length; i < l; i++) {
             rect = rects[i];
+            quadOptions.rotation[2] = (totalDelta - rect.startDelta) * rect.deltaMultiplier;
             GL.renderQuad(
                 rect.texture,
                 rect,
-                {
-                    rotation: [0, 0, (totalDelta - rect.startDelta) * rect.deltaMultiplier]
-                }
+                quadOptions
             );
         }
     }

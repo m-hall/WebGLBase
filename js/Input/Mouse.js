@@ -6,12 +6,17 @@ var Mouse = (function () {
     "use strict";
 
     var exports = {
-        x: null,
-        y: null,
-        left: false,
-        middle: false,
-        right: false
-    };
+            x: null,
+            y: null,
+            left: false,
+            middle: false,
+            right: false
+        },
+        changeKey = {},
+        changePosition = {
+            x: 0,
+            y: 0
+        };
 
     /**
      * Updates the mouse state variables when a mouse button is pressed.
@@ -19,19 +24,21 @@ var Mouse = (function () {
      * @return {false}       False to prevent default browser action
      */
     function handleDown(e) {
-        var change = {};
+        delete changeKey.left;
+        delete changeKey.middle;
+        delete changeKey.right;
         if (e.button === 0) {
             exports.left = true;
-            change.left = true;
+            changeKey.left = true;
         } else if (e.button === 1) {
             exports.middle = true;
-            change.middle = true;
+            changeKey.middle = true;
         } else if (e.button === 2) {
             exports.right = true;
-            change.right = true;
+            changeKey.right = true;
         }
-        Event.fire('mouseButton', change);
-        Event.fire('mouseEvent', change);
+        Event.fire('mouseButton', changeKey);
+        Event.fire('mouseEvent', changeKey);
         return Util.preventAction(e);
     }
 
@@ -41,19 +48,21 @@ var Mouse = (function () {
      * @return {false}       False to prevent default browser action
      */
     function handleUp(e) {
-        var change = {};
+        delete changeKey.left;
+        delete changeKey.middle;
+        delete changeKey.right;
         if (e.button === 0) {
             exports.left = false;
-            change.left = false;
+            changeKey.left = false;
         } else if (e.button === 1) {
             exports.middle = false;
-            change.middle = false;
+            changeKey.middle = false;
         } else if (e.button === 2) {
             exports.right = false;
-            change.right = false;
+            changeKey.right = false;
         }
-        Event.fire('mouseButton', change);
-        Event.fire('mouseEvent', change);
+        Event.fire('mouseButton', changeKey);
+        Event.fire('mouseEvent', changeKey);
         return Util.preventAction(e);
     }
 
@@ -62,13 +71,12 @@ var Mouse = (function () {
      * @param  {DOMEvent} e  A DOM mouse event.
      */
     function handleMove(e) {
-        var change = {};
-        change.x = e.pageX - (exports.x || 0);
-        change.y = window.innerHeight - e.pageY - (exports.y || 0);
+        changePosition.x = e.pageX - (exports.x || 0);
+        changePosition.y = window.innerHeight - e.pageY - (exports.y || 0);
         exports.x = e.pageX;
         exports.y = window.innerHeight - e.pageY;
-        Event.fire('mouseMove', change);
-        Event.fire('mouseEvent', change);
+        Event.fire('mouseMove', changePosition);
+        Event.fire('mouseEvent', changePosition);
     }
 
     /**

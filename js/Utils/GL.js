@@ -35,6 +35,9 @@ var GL = (function () {
 
     var perspectiveMatrix;
     var modelView;
+    var translation = [0, 0, 0];
+    var rotation = [0, 0, 0];
+    var scale = [1, 1, 0];
 
     var shader = null,
         vertexShader = [
@@ -209,16 +212,30 @@ var GL = (function () {
      */
     function renderQuad(texture, bounds, options) {
         options = options || {};
-        var rotation = options.rotation || [0, 0, 0];
+        if (options.rotation) {
+            rotation[0] = options.rotation[0];
+            rotation[1] = options.rotation[1];
+            rotation[2] = options.rotation[2];
+        } else {
+            rotation[0] = 0;
+            rotation[1] = 0;
+            rotation[2] = 0;
+        }
+        translation[0] = bounds.x;
+        translation[1] = bounds.y;
+        translation[2] = bounds.z || 0;
+        scale[0] = bounds.width;
+        scale[1] = bounds.height;
+        scale[2] = 0;
         var rDelta = Math.max(rotation[0], rotation[1], rotation[2]);
 
         var triangleBuffer = quad.centerBuffer;
         var texBuffer = quad.texBuffer;
 
         mat4.identity(modelView);
-        mat4.translate(modelView, modelView, [bounds.x, bounds.y, bounds.z || 0]);
+        mat4.translate(modelView, modelView, translation);
         mat4.rotate(modelView, modelView, rDelta, rotation);
-        mat4.scale(modelView, modelView, [bounds.width, bounds.height, 0]);
+        mat4.scale(modelView, modelView, scale);
 
         gl.uniform1f(shader.alpha, isNaN(options.alpha) ? 1 : options.alpha);
         gl.uniformMatrix4fv(shader.modelView, false, modelView);
