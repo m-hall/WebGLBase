@@ -17,7 +17,7 @@ var Loop = (function () {
          */
         requestFrame: function () {
             if (!Loop.frameRequested) {
-                Loop.time = Util.now();
+                Loop.time = Date.now();
                 requestAnimationFrame(Loop.frame);
                 Loop.frameRequested = true;
             }
@@ -28,7 +28,7 @@ var Loop = (function () {
         frame: function () {
             var oldTime = Loop.time,
                 delta;
-            Loop.time = Util.now();
+            Loop.time = Date.now();
             delta = Loop.time - oldTime;
             Loop.delta = delta;
             Loop.frameRequested = false;

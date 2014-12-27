@@ -143,13 +143,6 @@ var Util = (function () {
             return false;
         },
         /**
-         * Gets the current time in milliseconds
-         * @return {int} Timestamp
-         */
-        now: function () {
-            return (new Date()).getTime();
-        },
-        /**
          * Gets a canvas with size scaled to provided width and height
          * @param  {int}       width  Width of the canvas
          * @param  {int}       height Height of the canvas
