@@ -7,7 +7,7 @@ var Loop = (function () {
     "use strict";
 
     return {
-        time: new Date().getTime(),
+        time: Date.now(),
         delta: 0,
         frameRequested: false,
         keepRendering: false,
