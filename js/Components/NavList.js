@@ -5,6 +5,7 @@
  */
 var NavList = (function () {
     "use strict";
+    var center = {};
 
     /**
      * Checks if a point is inside a rectangular bounds
@@ -31,19 +32,19 @@ var NavList = (function () {
      * @return {Navigable}               A navigable item
      */
     function nearestInDirection(from, list, angle) {
-        var center = Util.getCenter(from.bounds),
-            nearest = null,
+        center = Util.getCenter(from.bounds, center);
+        var nearest = null,
             distance = null,
             item,
             itemAngle,
-            itemCenter,
+            itemCenter = {},
             itemDistance,
             i,
             l;
         for (i = 0, l = list.length; i < l; i++) {
             item = list[i];
             if (from !== item) {
-                itemCenter = Util.getCenter(item.bounds);
+                itemCenter = Util.getCenter(item.bounds, itemCenter);
                 itemAngle = Util.angleTo(center, itemCenter);
                 if (Util.isAngleNear(angle, itemAngle)) {
                     itemDistance = Util.distance(center, itemCenter);
@@ -58,6 +59,7 @@ var NavList = (function () {
     }
     /**
      * Handles mouse button events
+     * @this   {NavList}
      * @param  {object} change Lists all changes in mouse button states
      */
     function mouseButton(change) {
@@ -77,6 +79,7 @@ var NavList = (function () {
     }
     /**
      * Handles key events
+     * @this   {NavList}
      * @param  {object} change Lists all changes in key states
      */
     function keyEvent(change) {
@@ -101,6 +104,7 @@ var NavList = (function () {
     }
     /**
      * Handles touch events
+     * @this   {NavList}
      * @param  {object} change  A list of changed touch objects
      */
     function touchEvent(change) {
@@ -125,7 +129,7 @@ var NavList = (function () {
     /**
      * NavList component constructor
      */
-    function exports(onAction) {
+    function NavListClass(onAction) {
         this.selected = null;
         this.items = [];
         this.onAction = onAction;
@@ -134,7 +138,7 @@ var NavList = (function () {
         this.touchListener = touchEvent.bind(this);
         this.selector = new Selector();
     }
-    exports.prototype = {
+    NavListClass.prototype = {
         /**
          * Adds an item to the NavList
          * @param {Navigable} item  A navigable item.
@@ -209,5 +213,5 @@ var NavList = (function () {
             return;
         }
     };
-    return exports;
+    return NavListClass;
 }());

@@ -86,30 +86,52 @@ var Util = (function () {
         },
         /**
          * Clones an object of it's properties to a new object
-         * @param  {object} o  An object to clone
-         * @return {object}    A new object with the same properties
+         * @param  {object} o     An object to clone
+         * @param  {object} [out] An output object
+         * @return {object}       A new object with the same properties
          */
-        clone: function (o) {
+        clone: function (o, out) {
             var keys = Object.keys(o),
-                newO = {},
                 i,
                 l;
+            out = out || {};
             for (i = 0, l = keys.length; i < l; i++) {
-                newO[keys[i]] = o[keys[i]];
+                out[keys[i]] = o[keys[i]];
             }
-            return newO;
+            return out;
+        },
+        /**
+         * Clones a bounds object of it's properties to a new bounds object.
+         * Cloned properties: x, y, z, width, height, radius.
+         * @param  {bounds} o     An object to clone
+         * @param  {bounds} [out] An output object
+         * @return {bounds}       A new object with the same properties
+         */
+        cloneBounds: function (o, out) {
+            out = out || {};
+            out.x = o.x;
+            out.y = o.y;
+            out.z = o.z;
+            if (o.width || o.height) {
+                out.width = o.width;
+                out.height = o.height;
+            }
+            if (o.radius) {
+                out.radius = o.radius;
+            }
+            return out;
         },
         /**
          * Gets the center point of a bounds object
          * @param  {object} bounds  Bounds with x, y, width, height
+         * @param  {object} [out]   An output object
          * @return {object}         Point with x, y
          */
-        getCenter: function (bounds) {
-            var center = {
-                x: bounds.x + bounds.width / 2,
-                y: bounds.y + bounds.height / 2
-            };
-            return center;
+        getCenter: function (bounds, out) {
+            out = out || {};
+            out.x = bounds.x + bounds.width / 2;
+            out.y = bounds.y + bounds.height / 2;
+            return out;
         },
         /**
          * Prevents a browser event from continuing.
