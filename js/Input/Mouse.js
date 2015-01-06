@@ -12,7 +12,11 @@ var Mouse = (function () {
             middle: false,
             right: false
         },
-        changeKey = {},
+        changeKey = {
+            left: undefined,
+            middle: undefined,
+            right: undefined
+        },
         changePosition = {
             x: 0,
             y: 0
@@ -24,9 +28,9 @@ var Mouse = (function () {
      * @return {false}       False to prevent default browser action
      */
     function handleDown(e) {
-        delete changeKey.left;
-        delete changeKey.middle;
-        delete changeKey.right;
+        changeKey.left = undefined;
+        changeKey.middle = undefined;
+        changeKey.right = undefined;
         if (e.button === 0) {
             exports.left = true;
             changeKey.left = true;
@@ -48,9 +52,9 @@ var Mouse = (function () {
      * @return {false}       False to prevent default browser action
      */
     function handleUp(e) {
-        delete changeKey.left;
-        delete changeKey.middle;
-        delete changeKey.right;
+        changeKey.left = undefined;
+        changeKey.middle = undefined;
+        changeKey.right = undefined;
         if (e.button === 0) {
             exports.left = false;
             changeKey.left = false;
